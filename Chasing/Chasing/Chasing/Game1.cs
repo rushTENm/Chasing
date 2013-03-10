@@ -22,7 +22,7 @@ namespace Chasing
         CameraTarget target;
         ChaseCamera camera;
 
-        Model targetModel;
+        GameModel livingRoom;
 
         bool cameraSpringEnabled = true;
 
@@ -33,17 +33,6 @@ namespace Chasing
 
             graphics.PreferredBackBufferWidth = 1366;
             graphics.PreferredBackBufferHeight = 768;
-
-            // Create the chase camera
-            camera = new ChaseCamera();
-
-            // Set the camera offsets
-            camera.DesiredPositionOffset = new Vector3(0.0f, 2000.0f, 3500.0f);
-            camera.LookAtOffset = new Vector3(0.0f, 150.0f, 0.0f);
-
-            // Set camera perspective
-            camera.NearPlaneDistance = 10.0f;
-            camera.FarPlaneDistance = 100000.0f;
         }
 
         protected override void Initialize()
@@ -51,11 +40,10 @@ namespace Chasing
             // TODO: Add your initialization logic here
             target = new CameraTarget(GraphicsDevice);
 
-            // Set the camera aspect ratio
-            // This must be done after the class to base.Initalize() which will
-            // initialize the graphics device.
-            camera.AspectRatio = graphics.GraphicsDevice.Viewport.AspectRatio;
+            livingRoom = new GameModel();
 
+            // Create the chase camera
+            camera = new ChaseCamera();
 
             // Perform an inital reset on the camera so that it starts at the resting
             // position. If we don't do this, the camera will start at the origin and
@@ -73,7 +61,8 @@ namespace Chasing
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // TODO: use this.Content to load your game content here
-            targetModel = Content.Load<Model>("Ship");
+            target.Init(Content,0.2f,@"JustBall");
+            livingRoom.Init(Content,1.0f, @"LivingRoom");
         }
 
         protected override void UnloadContent()
@@ -135,29 +124,11 @@ namespace Chasing
             // TODO: Add your drawing code here
             GraphicsDevice.DepthStencilState = DepthStencilState.Default;
 
-            DrawModel(targetModel, target.World);
-
+            target.DrawMeshes(camera);
+            livingRoom.DrawMeshes(camera);
             base.Draw(gameTime);
         }
 
-        private void DrawModel(Model model, Matrix world)
-        {
-            Matrix[] transforms = new Matrix[model.Bones.Count];
-            model.CopyAbsoluteBoneTransformsTo(transforms);
-
-            foreach (ModelMesh mesh in model.Meshes)
-            {
-                foreach (BasicEffect effect in mesh.Effects)
-                {
-                    effect.EnableDefaultLighting();
-                    effect.World = transforms[mesh.ParentBone.Index] * world;
-
-                    // Use the matrices provided by the chase camera
-                    effect.View = camera.View;
-                    effect.Projection = camera.Projection;
-                }
-                mesh.Draw();
-            }
-        }
+        
     }
 }

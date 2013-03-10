@@ -6,17 +6,22 @@ using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
 
 namespace Chasing
 {
     class CameraTarget
     {
-        private const float MinimumAltitude = 0f;
+        private const float MinimumAltitude = 350.0f;
 
         /// <summary>
         /// A reference to the graphics device used to access the viewport for touch input.
         /// </summary>
         private GraphicsDevice graphicsDevice;
+
+        public Model Model;
+
+        float Scale;
 
         public Vector3 Position;
         public Vector3 Direction;
@@ -30,10 +35,10 @@ namespace Chasing
         /// <summary>
         /// Full speed at which ship can rotate; measured in radians per second.
         /// </summary>
-        private const float RotationRate = 1.5f;
+        private const float RotationRate = 1.8f;
         private const float Mass = 1.0f;
-        private const float ThrustForce = 24000.0f;
-        private const float DragFactor = 0.97f;
+        private const float ThrustForce = 10000.0f;
+        private const float DragFactor = 0.9f;
 
         public Vector3 Velocity;
 
@@ -56,6 +61,13 @@ namespace Chasing
             Up = Vector3.Up;
             right = Vector3.Right;
             Velocity = Vector3.Zero;
+        }
+
+        public void Init(ContentManager content, float scale, string FileLoaction)
+        {
+            Model = content.Load<Model>(FileLoaction);
+
+            Scale = scale;
         }
 
         public void Update(GameTime gameTime)
@@ -132,6 +144,27 @@ namespace Chasing
             world.Up = Up;
             world.Right = right;
             world.Translation = Position;
+        }
+
+        public void DrawMeshes(ChaseCamera camera)
+        {
+            Matrix[] transforms = new Matrix[Model.Bones.Count];
+            Model.CopyAbsoluteBoneTransformsTo(transforms);
+
+            foreach (ModelMesh mesh in Model.Meshes)
+            {
+                foreach (BasicEffect effect in mesh.Effects)
+                {
+                    effect.EnableDefaultLighting();
+                    effect.PreferPerPixelLighting = true;
+                    effect.World = transforms[mesh.ParentBone.Index] * Matrix.CreateScale(Scale) * world;
+
+                    // Use the matrices provided by the chase camera
+                    effect.View = camera.View;
+                    effect.Projection = camera.Projection;
+                }
+                mesh.Draw();
+            }
         }
     }
 }

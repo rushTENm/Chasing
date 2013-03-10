@@ -35,7 +35,7 @@ namespace Chasing
             get { return desiredPositionOffset; }
             set { desiredPositionOffset = value; }
         }
-        private Vector3 desiredPositionOffset = new Vector3(0, 2.0f, 2.0f);
+        private Vector3 desiredPositionOffset = new Vector3(0, 50.0f, 400.0f);
 
         public Vector3 DesiredPosition
         {
@@ -54,7 +54,7 @@ namespace Chasing
             get { return lookAtOffset; }
             set { lookAtOffset = value; }
         }
-        private Vector3 lookAtOffset = new Vector3(0, 2.8f, 0);
+        private Vector3 lookAtOffset = new Vector3(0, 0f, 0);
 
         public Vector3 LookAt
         {

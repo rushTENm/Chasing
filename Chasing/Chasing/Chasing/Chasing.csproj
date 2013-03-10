@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="CameraTarget.cs" />
     <Compile Include="ChaseCamera.cs" />
+    <Compile Include="GameModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
